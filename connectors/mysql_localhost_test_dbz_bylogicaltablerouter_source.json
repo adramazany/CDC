@@ -1,0 +1,22 @@
+{
+  "name" : "mysql_localhost_test_dbz_bylogicaltablerouter_source",
+  "config" : {
+    "connector.class" : "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname" : "localhost",
+    "database.user" : "test",
+    "database.password" : "test",
+    "database.server.name" : "test",
+    "database.history.kafka.topic" : "t_mysql_history",
+    "database.history.kafka.bootstrap.servers" : "localhost:9092",
+    "include.schema.changes" : "false",
+    "snapshot.mode" : "never",
+    "transforms" : "Reroute",
+    "transforms.Reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.Reroute.topic.regex" : "(.*)",
+    "transforms.Reroute.topic.replacement" : "test_all_tables",
+    "transforms.Reroute.key.field.name" : "id",
+    "transforms.Reroute.key.field.regex" : "(.*)",
+    "transforms.Reroute.key.field.replacement" : "$2",
+    "transforms.Reroute.key.enforce.uniqueness" : "false"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "name" : "mysql_localhost_test_dbz_bylogicaltablerouter_extractnewrecordstate_replacefield_source",
+  "config" : {
+    "connector.class" : "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname" : "localhost",
+    "database.user" : "test",
+    "database.password" : "test",
+    "database.server.name" : "test",
+    "database.history.kafka.topic" : "h_test_history_4",
+    "database.history.kafka.bootstrap.servers" : "localhost:9092",
+    "include.schema.changes" : "false",
+    "snapshot.mode" : "initial",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+
+    "transforms" : "reroute,unwrap,filter_pk",
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "test_all_tables_4",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+    "transforms.unwrap.type" : "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.add.fields" : "op,db,table,source.ts_ms",
+    "transforms.unwrap.add.headers" : "db",
+    "transforms.unwrap.delete.handling.mode" : "rewrite",
+
+    "transforms.filter_pk.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.filter_pk.whitelist": "id,dev_id,__op,__db,__table,__source_ts_ms",
+
+    "transforms.extract_id.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.extract_id.field": "id",
+    "transforms.id_to_key.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.id_to_key.fields": "id",
+
+    "database.whitelist": "test"
+  }
+}
+
+/*
+    "transforms.valueToKeyId.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.valueToKeyId.fields": "id"
+    "key.converter.schemas.enable" : "false",
+    "value.converter.schemas.enable" : "false"
+
+    "transforms.rename_pk.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.rename_pk.renames": "dev_id:id",
+
+
+*/

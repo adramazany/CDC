@@ -1,0 +1,20 @@
+{
+  "name": "oracle_192.168.88.2_kafka_source",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "tasks.max": "1",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true",
+    "connection.url": "jdbc:oracle:thin:@192.168.88.2:1521:orcl",
+    "connection.user": "kafka",
+    "connection.password": "kafka",
+    "table.whitelist": "TABLE1",
+    "schema.pattern": "KAFKA",
+    "dialect.name": "OracleDatabaseDialect",
+    "mode": "incrementing",
+    "incrementing.column.name": "ID",
+    "poll.interval.ms": "1000",
+    "batch.max.rows": "1",
+    "topic.prefix": "oracle_"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "oracle_cdc_test_sink",
+  "config": {
+    "connector.class" : "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max" : "1",
+    "errors.log.enable" : "true",
+    "errors.log.include.messages" : "true",
+    "topics" : "test_all_tables",
+    "connection.url" : "jdbc:sqlite:../../sqlite_test_sink.db",
+    "dialect.name" : "SqliteDatabaseDialect",
+    "insert.mode" : "INSERT",
+    "batch.size" : "1",
+    "table.name.format" : "cdc_test",
+    "auto.create" : "true"
+  }
+}

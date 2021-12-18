@@ -1,0 +1,60 @@
+{
+  "name" : "cdc-dp-mysql-db_user_mng-dbz-source",
+  "config" : {
+    "connector.class" : "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname" : "10.198.110.62",
+    "database.user" : "bi_cdc_user",
+    "database.password" : "NmfNu7QrkKAF",
+    "database.server.name" : "mysql-slave-1",
+    "database.history.kafka.topic" : "h_dp_mysql_db_user_mng",
+    "database.history.kafka.bootstrap.servers" : "localhost:8011",
+    "include.schema.changes" : "false",
+    "snapshot.mode" : "initial",
+
+    "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "key.converter.schema.registry.url":"http://localhost:8013",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url":"http://localhost:8013",
+
+    "transforms" : "reroute,unwrap,select_columns,rename_columns,timestamp_conv",
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "cdc_dp_mysql_db_user_mng",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+    "transforms.unwrap.type" : "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.add.fields" : "op,db,table,ts_ms",
+    "transforms.unwrap.delete.handling.mode" : "rewrite",
+
+    "transforms.select_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.select_columns.whitelist": "id,dev_id,__op,__db,__table,__ts_ms",
+
+    "transforms.rename_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.rename_columns.renames": "__op:op,__db:db,__table:tbl,__ts_ms:ts_ms",
+
+    "transforms.timestamp_conv.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.timestamp_conv.field": "ts_ms",
+    "transforms.timestamp_conv.format": "yyyy-MM-dd HH:mm:ss.SSS",
+    "transforms.timestamp_conv.target.type": "string",
+
+    "database.whitelist": "db_user_mng",
+    "table.blacklist": "db_user_mng.oauth_access_token",
+    "table.blacklist": "db_user_mng.oauth_client_details",
+    "table.blacklist": "db_user_mng.oauth_client_token",
+    "table.blacklist": "db_user_mng.oauth_code",
+    "table.blacklist": "db_user_mng.oauth_refresh_token",
+    "table.blacklist": "db_user_mng.oauth_users",
+    "table.blacklist": "db_user_mng.oauth_users_roles",
+    "table.blacklist": "db_user_mng.roles_permissions"
+  }
+}
+
+
+/*
+    "database.whitelist": "dbnotif",
+    "table.whitelist": "dbnotif.devices",
+    "column.blacklist": "dbnotif.devices.description",
+    "snapshot.new.tables":"parallel",
+    "transforms.unwrap.add.headers" : "db",
+*/

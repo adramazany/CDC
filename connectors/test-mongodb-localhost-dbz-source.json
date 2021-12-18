@@ -1,0 +1,178 @@
+{  "name" : "test-mongodb-localhost-dbz-source",
+  "config" : {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "mongodb.hosts": "rs0/localhost:27017",
+    "mongodb.name": "test",
+    "mongodb.members.auto.discover": "true",
+    "tasks.max" : 1,
+    "snapshot.mode": "never",
+
+    "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "key.converter.schema.registry.url":"http://localhost:8081",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url":"http://localhost:8081",
+
+    "transforms":"unwrap,select_columns,rename_columns,timestamp_conv,reroute",
+
+    "transforms.unwrap.type":"io.debezium.connector.mongodb.transforms.ExtractNewDocumentState",
+    "transforms.unwrap.operation.header":"true",
+    "transforms.unwrap.delete.handling.mode": "rewrite",
+    "transforms.unwrap.drop.tombstones": "true",
+    "transforms.unwrap.array.encoding":"array",
+    "transforms.unwrap.flatten.struct":"true",
+    "transforms.unwrap.flatten.struct.delimiter":"_",
+    "transforms.unwrap.add.source.fields":"db,collection",
+    "transforms.unwrap.add.fields":"op,ts_ms",
+
+    "transforms.select_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.select_columns.whitelist": "id,__op,__db,__collection,__ts_ms,__deleted",
+
+    "transforms.rename_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.rename_columns.renames": "__op:op,__db:db,__collection:col,__ts_ms:ts_ms,__deleted:deleted",
+
+    "transforms.timestamp_conv.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.timestamp_conv.field": "ts_ms",
+    "transforms.timestamp_conv.format": "yyyy-MM-dd HH:mm:ss.SSS",
+    "transforms.timestamp_conv.target.type": "string",
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "test_all_collections",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+    "database.whitelist":"test"
+}}
+
+/*
+
+{  "name" : "test-mongodb-localhost-dbz-source",
+  "config" : {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "mongodb.hosts": "rs0/localhost:27017",
+    "mongodb.name": "test",
+    "mongodb.members.auto.discover": "true",
+    "tasks.max" : 1,
+
+    "transforms":"unwrap,rename_columns,timestamp_conv,reroute,deleted_id",
+
+    "transforms.unwrap.type":"io.debezium.connector.mongodb.transforms.ExtractNewDocumentState",
+    "transforms.unwrap.operation.header":"true",
+    "transforms.unwrap.delete.handling.mode": "rewrite",
+    "transforms.unwrap.drop.tombstones": "true",
+    "transforms.unwrap.array.encoding":"array",
+    "transforms.unwrap.flatten.struct":"true",
+    "transforms.unwrap.flatten.struct.delimiter":"_",
+    "transforms.unwrap.add.source.fields":"db,collection",
+    "transforms.unwrap.add.fields":"op,ts_ms",
+
+    "transforms.rename_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.rename_columns.renames": "__op:op,__db:db,__collection:col,__ts_ms:ts_ms",
+
+    "transforms.timestamp_conv.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.timestamp_conv.field": "ts_ms",
+    "transforms.timestamp_conv.format": "yyyy-MM-dd HH:mm:ss.SSS",
+    "transforms.timestamp_conv.target.type": "string",
+
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "test_all_collections",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+
+    "transforms.deleted_id.type":"org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.deleted_id.whitelist":"id",
+
+    "collection.whitelist":"test.customers"
+}}
+
+
+    "transforms.deleted_id.type":"org.apache.kafka.connect.transforms.ExtractField$Value",
+    "transforms.deleted_id.field":"id",
+
+
+{  "name" : "test-mongodb-localhost-dbz-source",
+  "config" : {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "mongodb.hosts": "rs0/localhost:27017",
+    "mongodb.name": "test",
+    "mongodb.members.auto.discover": "true",
+    "tasks.max" : 1,
+
+    "transforms":"unwrap,select_columns,rename_columns,timestamp_conv,reroute",
+
+    "transforms.unwrap.type":"io.debezium.connector.mongodb.transforms.ExtractNewDocumentState",
+    "transforms.unwrap.operation.header":"true",
+    "transforms.unwrap.array.encoding":"array",
+    "transforms.unwrap.flatten.struct":"true",
+    "transforms.unwrap.flatten.struct.delimiter":"_",
+    "transforms.unwrap.add.source.fields":"db,collection",
+    "transforms.unwrap.add.fields":"op,ts_ms",
+
+    "transforms.select_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.select_columns.whitelist": "id,__op,__db,__collection,__ts_ms",
+
+    "transforms.rename_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.rename_columns.renames": "__op:op,__db:db,__collection:col,__ts_ms:ts_ms",
+
+    "transforms.timestamp_conv.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.timestamp_conv.field": "ts_ms",
+    "transforms.timestamp_conv.format": "yyyy-MM-dd HH:mm:ss.SSS",
+    "transforms.timestamp_conv.target.type": "string",
+
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "test_all_collections",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+    "collection.whitelist":"test.customers"
+}}
+
+
+{  "name" : "test-original-mongodb-localhost-dbz-source",
+  "config" : {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "mongodb.hosts": "rs0/localhost:27017",
+    "mongodb.name": "test",
+    "mongodb.members.auto.discover": "true",
+    "tasks.max" : 1,
+
+    "database.whitelist":"test"
+    "collection.whitelist":"test.customers"
+}}
+
+
+{
+  "name": "inventory-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "mongodb.hosts": "/localhost:27017",
+    "mongodb.name": "test",
+    "collection.include.list": "test.test",
+    "mongodb.members.auto.discover": "true"
+  }
+}
+
+
+    "mongodb.user": "test",
+    "mongodb.password": "test",
+
+name = mongo_source
+connector.class = io.debezium.connector.mongodb.MongoDbConnector
+tasks.max = 1
+transforms = renameTopic
+errors.log.enable = true
+errors.log.include.messages = true
+transforms.renameTopic.type = io.debezium.connector.mongodb.transforms.ExtractNewDocumentState
+transforms.renameTopic.flatten.struct = true
+mongodb.hosts = bipreplica/192.168.88.240:27017
+mongodb.name = test
+mongodb.members.auto.discover = false
+event.processing.failure.handling.mode = fail
+max.batch.size = 1
+initial.sync.max.threads = 1
+collection.whitelist = test.test
+*/,
+
+

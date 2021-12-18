@@ -1,0 +1,24 @@
+{
+  "name": "mongo_localhost_test_dbz_source",
+  "config": {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "mongodb.hosts": "localhost:27017",
+    "mongodb.name": "test",
+    "mongodb.members.auto.discover": "false",
+    "transforms": "extractFieldId, valueToKeyId",
+    "transforms.extractFieldId.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.extractFieldId.field": "$oid",
+    "transforms.valueToKeyId.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.valueToKeyId.fields": "$oid",
+    "event.processing.failure.handling.mode": "fail",
+    "tasks.max": "1",
+    "max.batch.size": "1",
+    "initial.sync.max.threads": "1",
+    "errors.log.enable": "true",
+    "errors.log.include.messages": "true"
+  }
+}
+
+/*
+    "collection.whitelist": "test.test",
+*/

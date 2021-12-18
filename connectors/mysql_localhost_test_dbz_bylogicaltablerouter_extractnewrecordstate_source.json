@@ -1,0 +1,32 @@
+{
+  "name" : "mysql_localhost_test_dbz_bylogicaltablerouter_extractnewrecordstate_source",
+  "config" : {
+    "connector.class" : "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname" : "localhost",
+    "database.user" : "test",
+    "database.password" : "test",
+    "database.server.name" : "test",
+    "database.history.kafka.topic" : "t_mysql_history",
+    "database.history.kafka.bootstrap.servers" : "localhost:9092",
+    "include.schema.changes" : "false",
+    "snapshot.mode" : "never",
+    "transforms" : "reroute,unwrap",
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "test_all_tables",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+    "transforms.unwrap.type" : "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.add.fields" : "op,db,table,source.ts_ms",
+    "transforms.unwrap.add.headers" : "db",
+    "transforms.unwrap.delete.handling.mode" : "rewrite",
+    "key.converter.schemas.enable" : "false",
+    "value.converter.schemas.enable" : "false"
+  }
+}
+
+
+/*
+"transforms.reroute.key.field.name" : "id",
+"transforms.reroute.key.field.regex" : "(.*)",
+"transforms.reroute.key.field.replacement" : "$2",
+*/

@@ -1,0 +1,32 @@
+{
+  "name":  "oracle_172.18.24.84_cdc_test_sink",
+  "config":
+  {
+    "connector.class":    "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "topics":    "test_all_tables",
+    "errors.log.enable":    "true",
+    "errors.log.include.messages":    "true",
+    "connection.url":    "jdbc:oracle:thin:@172.18.24.84:1521:orcl",
+    "connection.user":    "cdc",
+    "connection.password":    "cdc",
+    "dialect.name":    "OracleDatabaseDialect",
+    "insert.mode":    "INSERT",
+    "batch.size":    "100",
+    "table.name.format":    "CDC_TEST",
+    "auto.create":    "true",
+    "quote.sql.identifiers": "always"
+  }
+}
+
+/*
+
+CREATE TABLE CDC_TEST (
+  "id" NUMBER(10,0) NOT NULL,
+  "name" varchar2(512) NULL,
+  "__op" char(1) ,
+  "__db" varchar2(31) ,
+  "__table" varchar2(31) ,
+  "__source_ts_ms" NUMBER(19,0) ,
+  "__deleted" char(5) );
+
+*/

@@ -1,0 +1,83 @@
+{
+  "name":  "test_sqlite_localhost_cdc_test_sink",
+  "config":
+  {
+    "connector.class":    "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "topics":    "test_all_collections",
+    "errors.log.enable":    "true",
+    "errors.log.include.messages":    "true",
+    "connection.url":    "jdbc:sqlite:../test_sqlite_cdc_col_sink.db",
+    "dialect.name":    "SqliteDatabaseDialect",
+    "insert.mode":    "INSERT",
+    "batch.size":    "1",
+    "table.name.format":    "CDC_TEST",
+    "pk.mode": "record_key",
+    "pk.fields": "id",
+    "auto.create":    "true",
+    "quote.sql.identifiers": "always",
+
+    "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "key.converter.schema.registry.url":"http://localhost:8081",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url":"http://localhost:8081"
+  }
+}
+
+/*
+
+"key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+"key.converter.schema.registry.url":"http://localhost:8081",
+"value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+"value.converter.schema.registry.url":"http://localhost:8081",
+
+
+"key.converter": "io.confluent.connect.protobuf.ProtobufConverter",
+	"value.converter": "io.confluent.connect.protobuf.ProtobufConverter"
+
+"key.converter": "io.confluent.connect.avro.AvroConverter",
+	"value.converter": "io.confluent.connect.avro.AvroConverter"
+
+    "transforms": "flatten",
+    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value",
+    "transforms.flatten.delimiter": "_",
+
+
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "confluent.topic.security.protocol": "PLAINTEXT"
+
+
+create sequence seq_CDC_TEST;
+
+CREATE TABLE CDC_TEST (
+  STAMP_ID NUMBER,
+  id NUMBER(10,0) NOT NULL,
+  op char(1) ,
+  db varchar2(31) ,
+  tbl varchar2(31) ,
+  ts_ms Date ,
+  deleted char(5) );
+
+CREATE TRIGGER TRG_CDC_TEST
+BEFORE INSERT ON CDC_TEST
+FOR EACH ROW
+BEGIN
+  <<COLUMN_SEQUENCES>>
+  BEGIN
+    IF INSERTING AND :NEW.STAMP_ID IS NULL THEN
+      SELECT SEQ_CDC_TEST.NEXTVAL INTO :NEW.STAMP_ID FROM SYS.DUAL;
+    END IF;
+  END COLUMN_SEQUENCES;
+END;
+/
+
+
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+*/

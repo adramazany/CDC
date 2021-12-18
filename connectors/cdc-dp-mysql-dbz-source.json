@@ -1,0 +1,43 @@
+{
+  "name" : "cdc-dp-mysql-dbz-source",
+  "config" : {
+    "connector.class" : "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname" : "10.198.110.62",
+    "database.user" : "bi_cdc_user",
+    "database.password" : "NmfNu7QrkKAF",
+    "database.server.name" : "mysql-slave-1",
+    "database.history.kafka.topic" : "h_dp_mysql",
+    "database.history.kafka.bootstrap.servers" : "localhost:9092",
+    "include.schema.changes" : "false",
+    "snapshot.mode" : "initial",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+
+    "transforms" : "reroute,unwrap,select_columns",
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "cdc_dp_mysql",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+    "transforms.unwrap.type" : "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.add.fields" : "op,db,table,source.ts_ms",
+    "transforms.unwrap.delete.handling.mode" : "rewrite",
+
+    "transforms.select_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.select_columns.whitelist": "id,dev_id,__op,__db,__table,__source_ts_ms"
+
+  }
+}
+
+
+/*
+    "database.whitelist": "dbnotif",
+    "table.whitelist": "dbnotif.devices",
+    "column.blacklist": "dbnotif.devices.description",
+    "snapshot.new.tables":"parallel",
+    "transforms.unwrap.add.headers" : "db",
+*/

@@ -1,0 +1,63 @@
+{
+  "name" : "test-mysql-localhost-dbz-source",
+  "config" : {
+    "connector.class" : "io.debezium.connector.mysql.MySqlConnector",
+    "database.hostname" : "localhost",
+    "database.user" : "test",
+    "database.password" : "test",
+    "database.server.name" : "test",
+    "database.history.kafka.topic" : "h_test_history",
+    "database.history.kafka.bootstrap.servers" : "localhost:9092",
+    "include.schema.changes" : "false",
+    "snapshot.mode" : "initial",
+
+    "transforms" : "reroute,unwrap,select_columns,rename_columns,timestamp_conv",
+
+    "transforms.reroute.type" : "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.reroute.topic.regex" : "(.*)",
+    "transforms.reroute.topic.replacement" : "test_all_tables",
+    "transforms.reroute.key.enforce.uniqueness" : "false",
+
+    "transforms.unwrap.type" : "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.add.fields" : "op,db,table,ts_ms",
+    "transforms.unwrap.delete.handling.mode" : "rewrite",
+
+    "transforms.select_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.select_columns.whitelist": "id,dev_id,__op,__db,__table,__ts_ms",
+
+    "transforms.rename_columns.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.rename_columns.renames": "__op:op,__db:db,__table:tbl,__ts_ms:ts_ms",
+
+    "transforms.timestamp_conv.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+    "transforms.timestamp_conv.field": "ts_ms",
+    "transforms.timestamp_conv.format": "yyyy-MM-dd HH:mm:ss.SSS",
+    "transforms.timestamp_conv.target.type": "string",
+
+    "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "key.converter.schema.registry.url":"http://localhost:8081",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url":"http://localhost:8081"
+
+  }
+}
+
+
+/*
+
+    "key.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "key.converter.schema.registry.url":"http://localhost:8081",
+    "value.converter": "io.confluent.connect.json.JsonSchemaConverter",
+    "value.converter.schema.registry.url":"http://localhost:8081"
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+
+
+    "database.whitelist": "dbnotif",
+    "table.whitelist": "dbnotif.devices",
+    "column.blacklist": "dbnotif.devices.description",
+    "snapshot.new.tables":"parallel",
+    "transforms.unwrap.add.headers" : "db",
+*/
